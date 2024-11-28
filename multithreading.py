@@ -8,7 +8,12 @@ from bs4 import BeautifulSoup
 # global headers to be used for requests
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246'}
 
-MAX_THREADS = 10
+MAX_THREADS = 20
+
+# Adiciona cabeçalho ao arquivo CSV apenas uma vez
+with open('movies.csv', mode='w', newline='', encoding='utf-8') as file:
+    movie_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    movie_writer.writerow(['Title', 'Date', 'Rating', 'Plot'])  # 1. Alteração: Cabeçalho para o CSV
 
 def extract_movie_details(movie_link):
     time.sleep(random.uniform(0, 0.2))
@@ -47,6 +52,7 @@ def extract_movie_details(movie_link):
                 plot_tag = movie_soup.find('span', attrs={'data-testid': 'plot-xs_to_m'})
                 plot_text = plot_tag.get_text().strip() if plot_tag else None
                 
+                # Escrevendo no arquivo CSV
                 with open('movies.csv', mode='a', newline='', encoding='utf-8') as file:
                     movie_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                     if all([title, date, rating, plot_text]):
